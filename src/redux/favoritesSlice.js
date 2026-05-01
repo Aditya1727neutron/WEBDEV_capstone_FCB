@@ -1,55 +1,63 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// Load from localStorage
-function loadFavorites() {
+// Load favorites from localStorage on boot
+const loadFromStorage = (key) => {
   try {
-    const saved = localStorage.getItem('barca_favorites')
-    return saved ? JSON.parse(saved) : { matchIds: [], playerIds: [] }
+    const raw = localStorage.getItem(key)
+    return raw ? JSON.parse(raw) : []
   } catch {
-    return { matchIds: [], playerIds: [] }
+    return []
   }
 }
 
-function saveFavorites(state) {
-  localStorage.setItem('barca_favorites', JSON.stringify({
-    matchIds: state.matchIds,
-    playerIds: state.playerIds,
-  }))
+const saveToStorage = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data))
+  } catch (e) {
+    console.warn('Failed to save to localStorage:', e)
+  }
 }
-
-const initialState = loadFavorites()
 
 const favoritesSlice = createSlice({
   name: 'favorites',
-  initialState,
+  initialState: {
+    players: loadFromStorage('barca_fav_players'), // Array of player objects
+    matches: loadFromStorage('barca_fav_matches'), // Array of match objects
+  },
   reducers: {
-    toggleFavoriteMatch(state, action) {
-      const matchId = action.payload
-      const index = state.matchIds.indexOf(matchId)
-      if (index === -1) {
-        state.matchIds.push(matchId)
-      } else {
-        state.matchIds.splice(index, 1)
+    // Add a favorite player
+    addFavoritePlayer(state, action) {
+      const exists = state.players.find((p) => p.player.id === action.payload.player.id)
+      if (!exists) {
+        state.players.push(action.payload)
+        saveToStorage('barca_fav_players', state.players)
       }
-      saveFavorites(state)
     },
-    toggleFavoritePlayer(state, action) {
-      const playerId = action.payload
-      const index = state.playerIds.indexOf(playerId)
-      if (index === -1) {
-        state.playerIds.push(playerId)
-      } else {
-        state.playerIds.splice(index, 1)
+    // Remove a favorite player
+    removeFavoritePlayer(state, action) {
+      state.players = state.players.filter((p) => p.player.id !== action.payload)
+      saveToStorage('barca_fav_players', state.players)
+    },
+    // Add a favorite match
+    addFavoriteMatch(state, action) {
+      const exists = state.matches.find((m) => m.fixture.id === action.payload.fixture.id)
+      if (!exists) {
+        state.matches.push(action.payload)
+        saveToStorage('barca_fav_matches', state.matches)
       }
-      saveFavorites(state)
     },
-    clearAllFavorites(state) {
-      state.matchIds = []
-      state.playerIds = []
-      saveFavorites(state)
+    // Remove a favorite match
+    removeFavoriteMatch(state, action) {
+      state.matches = state.matches.filter((m) => m.fixture.id !== action.payload)
+      saveToStorage('barca_fav_matches', state.matches)
     },
   },
 })
 
-export const { toggleFavoriteMatch, toggleFavoritePlayer, clearAllFavorites } = favoritesSlice.actions
+export const {
+  addFavoritePlayer,
+  removeFavoritePlayer,
+  addFavoriteMatch,
+  removeFavoriteMatch,
+} = favoritesSlice.actions
 export default favoritesSlice.reducer
