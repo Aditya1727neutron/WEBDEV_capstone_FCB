@@ -1,18 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import uiReducer from './uiSlice'
-import matchesReducer from './matchesSlice'
-import playersReducer from './playersSlice'
-import favoritesReducer from './favoritesSlice'
-import standingsReducer from './standingsSlice'
+import matchesReducer from './slices/matchesSlice'
+import playersReducer from './slices/playersSlice'
+import favoritesReducer from './slices/favoritesSlice'
+import uiReducer from './slices/uiSlice'
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    ui: uiReducer,
     matches: matchesReducer,
     players: playersReducer,
     favorites: favoritesReducer,
-    standings: standingsReducer,
+    ui: uiReducer,
   },
 })
-
-export default store
