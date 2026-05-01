@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = {
-  darkMode: JSON.parse(localStorage.getItem('barca_darkMode') || 'true'),
-  sidebarOpen: false,
-}
-
 const uiSlice = createSlice({
   name: 'ui',
-  initialState,
+  initialState: {
+    darkMode: true, // Barcelona theme default is dark
+    sidebarOpen: false, // Mobile sidebar toggle
+    globalLoading: false,
+    notification: null, // { type: 'success'|'error'|'info', message: '' }
+  },
   reducers: {
     setDarkMode(state, action) {
       state.darkMode = action.payload
@@ -23,8 +23,25 @@ const uiSlice = createSlice({
     toggleSidebar(state) {
       state.sidebarOpen = !state.sidebarOpen
     },
+    setGlobalLoading(state, action) {
+      state.globalLoading = action.payload
+    },
+    showNotification(state, action) {
+      state.notification = action.payload
+    },
+    clearNotification(state) {
+      state.notification = null
+    },
   },
 })
 
-export const { setDarkMode, toggleDarkMode, setSidebarOpen, toggleSidebar } = uiSlice.actions
+export const {
+  setDarkMode,
+  toggleDarkMode,
+  setSidebarOpen,
+  toggleSidebar,
+  setGlobalLoading,
+  showNotification,
+  clearNotification,
+} = uiSlice.actions
 export default uiSlice.reducer
