@@ -1,9 +1,11 @@
 /**
  * Utility functions for match data processing.
- * Used across Dashboard, Matches, MatchDetail, and chart components.
+ * Works with the normalized match shape from API-Football.
+ *
+ * Barcelona team ID in API-Football = 529
  */
 
-const BARCA_TEAM_ID = 81
+const BARCA_TEAM_ID = 529
 
 // ─── Match Result ───────────────────────────────────────────────────────────
 
@@ -81,7 +83,7 @@ export function getPositionColor(position) {
   }
 }
 
-// ─── Sorting & Filtering ────────────────────────────────────────────────────
+// ─── Sorting ────────────────────────────────────────────────────────────────
 
 export function sortByDateDesc(matches) {
   return [...matches].sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
@@ -89,17 +91,6 @@ export function sortByDateDesc(matches) {
 
 export function sortByDateAsc(matches) {
   return [...matches].sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate))
-}
-
-export function filterByCompetition(matches, code) {
-  if (code === 'ALL') return matches
-  const compIds = {
-    PD: 2014,   // La Liga
-    CL: 2001,   // Champions League
-  }
-  const compId = compIds[code]
-  if (!compId) return matches
-  return matches.filter((m) => m.competition?.id === compId)
 }
 
 // ─── Season Stats Calculator ────────────────────────────────────────────────
