@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ============================================
+     DARK MODE — HOME KIT (Blaugrana: Blue & Red)
+     ============================================ */
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* ============================================
+     LIGHT MODE — AWAY KIT (Red & Gold/Yellow)
+     ============================================ */
+  .light {
+    color-scheme: light;
+  }
+
+  /* Custom scrollbar — Dark: blue, Light: red */
+  .dark ::-webkit-scrollbar { width: 6px; }
+  .dark ::-webkit-scrollbar-track { background: #070d1f; }
+  .dark ::-webkit-scrollbar-thumb { background: #004D98; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb:hover { background: #1a6ab5; }
+
+  .light ::-webkit-scrollbar { width: 6px; }
+  .light ::-webkit-scrollbar-track { background: #FFF7E0; }
+  .light ::-webkit-scrollbar-thumb { background: #A50044; border-radius: 3px; }
+  .light ::-webkit-scrollbar-thumb:hover { background: #c4175f; }
+}
+
+@layer components {
+  /* ===== GLASS CARDS =====
+     Dark: deep blue glass
+     Light: warm white/gold glass */
+  .glass-card {
+    @apply bg-barca-away-card/90 dark:bg-barca-dark-card/80 
+           backdrop-blur-md 
+           border border-barca-away-border/50 dark:border-barca-dark-border 
+           rounded-2xl shadow-lg;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 
+           hover:shadow-xl hover:scale-[1.02] 
+           hover:border-barca-red/40 dark:hover:border-barca-blue/40;
+  }
+
+  /* ===== GRADIENTS =====
+     Dark: Blue → Red (Blaugrana)
+     Light: Red → Gold (Away) */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+  }
+  .dark .gradient-text {
+    background-image: linear-gradient(135deg, #004D98, #A50044, #1a6ab5);
+  }
+  .light .gradient-text {
+    background-image: linear-gradient(135deg, #A50044, #EDBB00, #c4175f);
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #004D98, #003366, #A50044);
+  }
+  .light .gradient-bg {
+    background: linear-gradient(135deg, #A50044, #7a0033, #EDBB00);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-primary {
+    @apply px-5 py-2.5 rounded-xl font-semibold text-white gradient-bg
+           hover:opacity-90 transition-all duration-300 hover:shadow-lg 
+           active:scale-95;
+  }
+  .dark .btn-primary {
+    box-shadow: 0 8px 24px rgba(0, 77, 152, 0.3);
+  }
+  .light .btn-primary {
+    box-shadow: 0 8px 24px rgba(165, 0, 68, 0.3);
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 rounded-xl font-semibold border-2 
+           transition-all duration-300 active:scale-95;
+  }
+  .dark .btn-secondary {
+    @apply border-barca-blue text-barca-blue-light hover:bg-barca-blue hover:text-white;
+  }
+  .light .btn-secondary {
+    @apply border-barca-red text-barca-red hover:bg-barca-red hover:text-white;
+  }
+
+  /* ===== STAT CARD ===== */
+  .stat-card {
+    @apply glass-card p-6 flex flex-col gap-2;
+  }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-container {
+    @apply p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full animate-fade-in;
+  }
+
+  .page-title {
+    @apply text-2xl md:text-3xl font-bold font-heading mb-6;
+  }
+  .dark .page-title {
+    @apply text-white;
+  }
+  .light .page-title {
+    @apply text-barca-away-text;
+  }
+
+  .section-title {
+    @apply text-lg md:text-xl font-semibold font-heading mb-4;
+  }
+  .dark .section-title {
+    @apply text-gray-100;
+  }
+  .light .section-title {
+    @apply text-barca-away-text;
+  }
+
+  /* ===== FILTER BUTTONS (active state) ===== */
+  .filter-active {
+    @apply text-white shadow-lg;
+  }
+  .dark .filter-active {
+    box-shadow: 0 6px 20px rgba(0, 77, 152, 0.35);
+  }
+  .light .filter-active {
+    box-shadow: 0 6px 20px rgba(165, 0, 68, 0.3);
+  }
+
+  .filter-inactive {
+    @apply transition-all duration-200;
+  }
+  .dark .filter-inactive {
+    @apply bg-barca-dark-card text-gray-400 hover:bg-barca-dark-hover;
+  }
+  .light .filter-inactive {
+    @apply bg-barca-away-surface text-barca-away-text-muted hover:bg-barca-away-border/40;
+  }
+
+  /* ===== INPUT FIELDS ===== */
+  .input-field {
+    @apply w-full px-4 py-2 pl-9 rounded-xl text-sm border 
+           focus:outline-none transition-colors;
+  }
+  .dark .input-field {
+    @apply bg-barca-dark-card border-barca-dark-border text-gray-200 
+           placeholder-gray-500 focus:border-barca-blue;
+  }
+  .light .input-field {
+    @apply bg-barca-away-surface border-barca-away-border text-barca-away-text 
+           placeholder-barca-away-text-muted focus:border-barca-red;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
