@@ -196,23 +196,25 @@
   }
 
   .page-title {
-    @apply text-2xl md:text-3xl font-bold font-heading mb-6;
+    @apply text-2xl md:text-3xl font-bold mb-6;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
   .dark .page-title {
     @apply text-white;
   }
   .light .page-title {
-    @apply text-barca-away-text;
+    color: #5C1A00;
   }
 
   .section-title {
-    @apply text-lg md:text-xl font-semibold font-heading mb-4;
+    @apply text-lg md:text-xl font-semibold mb-4;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
   .dark .section-title {
     @apply text-gray-100;
   }
   .light .section-title {
-    @apply text-barca-away-text;
+    color: #5C1A00;
   }
 
   /* ===== FILTER BUTTONS (active state) ===== */
@@ -230,12 +232,20 @@
     @apply transition-all duration-200;
   }
   .dark .filter-inactive {
-    @apply bg-barca-dark-card text-gray-400 hover:bg-barca-dark-hover;
+    background-color: #0f1a38;
+    color: #9ca3af;
     border: 1px solid rgba(26, 45, 90, 0.5);
   }
+  .dark .filter-inactive:hover {
+    background-color: #142044;
+  }
   .light .filter-inactive {
-    @apply bg-barca-away-surface text-barca-away-text-muted hover:bg-barca-away-border/40;
+    background-color: #FFF0C4;
+    color: #8B5E3C;
     border: 1px solid rgba(240, 208, 112, 0.5);
+  }
+  .light .filter-inactive:hover {
+    background-color: rgba(240, 208, 112, 0.4);
   }
 
   /* ===== INPUT FIELDS ===== */
@@ -244,21 +254,25 @@
            focus:outline-none transition-all duration-300;
   }
   .dark .input-field {
-    @apply bg-barca-dark-card border-barca-dark-border text-gray-200
-           placeholder-gray-500;
+    background-color: #0f1a38;
+    border-color: #1a2d5a;
+    color: #e5e7eb;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
+  .dark .input-field::placeholder { color: #6b7280; }
   .dark .input-field:focus {
-    @apply border-barca-blue;
+    border-color: #004D98;
     box-shadow: 0 0 0 3px rgba(0, 77, 152, 0.2), 0 2px 8px rgba(0, 0, 0, 0.2);
   }
   .light .input-field {
-    @apply bg-barca-away-surface border-barca-away-border text-barca-away-text
-           placeholder-barca-away-text-muted;
+    background-color: #FFF0C4;
+    border-color: #F0D070;
+    color: #5C1A00;
     box-shadow: 0 2px 8px rgba(92, 26, 0, 0.04);
   }
+  .light .input-field::placeholder { color: #8B5E3C; }
   .light .input-field:focus {
-    @apply border-barca-red;
+    border-color: #A50044;
     box-shadow: 0 0 0 3px rgba(165, 0, 68, 0.15), 0 2px 8px rgba(92, 26, 0, 0.04);
   }
 
@@ -281,10 +295,18 @@
     @apply p-2 rounded-xl transition-all duration-300 active:scale-90;
   }
   .dark .refresh-btn {
-    @apply text-gray-400 hover:bg-barca-dark-card hover:text-barca-blue-light;
+    color: #9ca3af;
+  }
+  .dark .refresh-btn:hover {
+    background-color: #0f1a38;
+    color: #1a6ab5;
   }
   .light .refresh-btn {
-    @apply text-barca-away-text-muted hover:bg-barca-away-surface hover:text-barca-red;
+    color: #8B5E3C;
+  }
+  .light .refresh-btn:hover {
+    background-color: #FFF0C4;
+    color: #A50044;
   }
   .refresh-btn.refreshing svg {
     animation: spin 1s linear infinite;
@@ -307,7 +329,8 @@
     @apply flex flex-col items-center;
   }
   .countdown-value {
-    @apply text-2xl md:text-3xl font-bold font-heading;
+    @apply text-2xl md:text-3xl font-bold;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
   .countdown-label {
     @apply text-[10px] uppercase tracking-wider font-semibold mt-1;
@@ -323,10 +346,14 @@
     background-size: 16px;
   }
   .dark .sort-select {
-    @apply bg-barca-dark-card text-gray-300 border border-barca-dark-border;
+    background-color: #0f1a38;
+    color: #d1d5db;
+    border: 1px solid #1a2d5a;
   }
   .light .sort-select {
-    @apply bg-barca-away-surface text-barca-away-text border border-barca-away-border;
+    background-color: #FFF0C4;
+    color: #5C1A00;
+    border: 1px solid #F0D070;
   }
 }
 

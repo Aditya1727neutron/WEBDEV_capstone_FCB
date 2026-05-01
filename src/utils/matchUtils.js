@@ -1,149 +1,127 @@
-const BARCA_ID = 529
-
 /**
- * Returns match result from Barcelona's perspective
- * @returns 'W' | 'D' | 'L'
+ * Utility functions for match data processing.
+ * Used across Dashboard, Matches, MatchDetail, and chart components.
  */
+
+const BARCA_TEAM_ID = 81
+
+// ─── Match Result ───────────────────────────────────────────────────────────
+
 export function getMatchResult(match) {
-  const { teams, goals } = match
-  const isBarcaHome = teams.home.id === BARCA_ID
-
-  const barcaGoals = isBarcaHome ? goals.home : goals.away
-  const oppGoals = isBarcaHome ? goals.away : goals.home
-
-  if (barcaGoals > oppGoals) return 'W'
-  if (barcaGoals < oppGoals) return 'L'
-  return 'D'
+  if (match.status !== 'FINISHED') return null
+  const home = match.score?.fullTime?.home
+  const away = match.score?.fullTime?.away
+  if (home == null || away == null) return null
+  const isHome = match.homeTeam?.id === BARCA_TEAM_ID
+  const barcaGoals = isHome ? home : away
+  const oppGoals = isHome ? away : home
+  if (barcaGoals > oppGoals) return 'WIN'
+  if (barcaGoals < oppGoals) return 'LOSS'
+  return 'DRAW'
 }
 
-/**
- * Returns the opponent team object
- */
-export function getOpponent(match) {
-  return match.teams.home.id === BARCA_ID ? match.teams.away : match.teams.home
+export function isBarcaHome(match) {
+  return match.homeTeam?.id === BARCA_TEAM_ID
 }
 
-/**
- * Returns Barcelona's goal score and opponent's goal score
- */
-export function getScore(match) {
-  const isBarcaHome = match.teams.home.id === BARCA_ID
-  return {
-    barca: isBarcaHome ? match.goals.home : match.goals.away,
-    opponent: isBarcaHome ? match.goals.away : match.goals.home,
+export function getBarcaScore(match) {
+  return isBarcaHome(match) ? match.score?.fullTime?.home : match.score?.fullTime?.away
+}
+
+export function getOpponentScore(match) {
+  return isBarcaHome(match) ? match.score?.fullTime?.away : match.score?.fullTime?.home
+}
+
+// ─── Result Badge Classes ───────────────────────────────────────────────────
+
+export function getResultBadgeClass(result) {
+  switch (result) {
+    case 'WIN': return 'bg-green-500/15 text-green-400 border-green-500/20'
+    case 'LOSS': return 'bg-red-500/15 text-red-400 border-red-500/20'
+    case 'DRAW': return 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20'
+    default: return 'bg-gray-500/15 text-gray-400 border-gray-500/20'
   }
 }
 
-/**
- * Returns Barcelona stats from fixture statistics array
- */
-export function getBarcaStats(statsArray) {
-  return statsArray?.find((s) => s.team.id === BARCA_ID) || null
-}
+// ─── Formatting ─────────────────────────────────────────────────────────────
 
-/**
- * Returns opponent stats from fixture statistics array
- */
-export function getOpponentStats(statsArray) {
-  return statsArray?.find((s) => s.team.id !== BARCA_ID) || null
-}
-
-/**
- * Parses a stat value (handles "54%" strings and null values)
- */
-export function parseStat(value) {
-  if (value === null || value === undefined) return 0
-  if (typeof value === 'string' && value.endsWith('%')) {
-    return parseFloat(value)
-  }
-  return Number(value) || 0
-}
-
-/**
- * Formats a date string to readable format
- */
-export function formatDate(dateStr) {
+export function formatMatchDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   })
 }
 
-/**
- * Returns a color class based on match result
- */
-export function getResultColor(result) {
-  switch (result) {
-    case 'W': return 'text-emerald-400'
-    case 'L': return 'text-red-400'
-    case 'D': return 'text-yellow-400'
-    default: return 'text-gray-400'
+export function formatMatchTime(dateStr) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleTimeString('en-GB', {
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
+// ─── Position Helpers ───────────────────────────────────────────────────────
+
+export function formatPosition(position) {
+  switch (position) {
+    case 'Goalkeeper': return 'GK'
+    case 'Defence': return 'DEF'
+    case 'Midfield': return 'MID'
+    case 'Offence': return 'FWD'
+    default: return 'N/A'
   }
 }
 
-export function getResultBg(result) {
-  switch (result) {
-    case 'W': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-    case 'L': return 'bg-red-500/20 text-red-400 border-red-500/30'
-    case 'D': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-    default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+export function getPositionColor(position) {
+  switch (position) {
+    case 'Goalkeeper': return 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20'
+    case 'Defence': return 'bg-blue-500/15 text-blue-400 border border-blue-500/20'
+    case 'Midfield': return 'bg-green-500/15 text-green-400 border border-green-500/20'
+    case 'Offence': return 'bg-red-500/15 text-red-400 border border-red-500/20'
+    default: return 'bg-gray-500/15 text-gray-400 border border-gray-500/20'
   }
 }
 
-/**
- * Generates a smart match insight string based on stats
- */
-export function generateInsight(barcaStats, oppStats) {
-  if (!barcaStats || !oppStats) return null
+// ─── Sorting & Filtering ────────────────────────────────────────────────────
 
-  const insights = []
-
-  const barcaPoss = parseStat(barcaStats.statistics?.find(s => s.type === 'Ball Possession')?.value)
-  const barcaShots = parseStat(barcaStats.statistics?.find(s => s.type === 'Total Shots')?.value)
-  const oppShots = parseStat(oppStats.statistics?.find(s => s.type === 'Total Shots')?.value)
-  const barcaCorners = parseStat(barcaStats.statistics?.find(s => s.type === 'Corner Kicks')?.value)
-  const barcaFouls = parseStat(barcaStats.statistics?.find(s => s.type === 'Fouls')?.value)
-  const oppFouls = parseStat(oppStats.statistics?.find(s => s.type === 'Fouls')?.value)
-
-  if (barcaPoss > 55) insights.push(`Barcelona dominated possession with ${barcaPoss}%`)
-  if (barcaShots > oppShots) insights.push(`created more attacking chances (${barcaShots} shots vs ${oppShots})`)
-  if (barcaCorners > 5) insights.push(`earned ${barcaCorners} corner kicks showing sustained pressure`)
-  if (barcaFouls < oppFouls) insights.push(`played a disciplined game with fewer fouls`)
-
-  if (insights.length === 0) return 'A competitive fixture with both teams testing each other throughout.'
-  return insights.join(', ') + '.'
+export function sortByDateDesc(matches) {
+  return [...matches].sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
 }
 
-/**
- * Groups matches by competition name
- */
-export function groupByCompetition(matches) {
-  return matches.reduce((acc, match) => {
-    const name = match.league.name
-    if (!acc[name]) acc[name] = []
-    acc[name].push(match)
-    return acc
-  }, {})
+export function sortByDateAsc(matches) {
+  return [...matches].sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate))
 }
 
-/**
- * Computes season summary stats from matches array
- */
-export function computeSeasonStats(matches) {
-  const played = matches.filter((m) => m.fixture.status.short === 'FT')
+export function filterByCompetition(matches, code) {
+  if (code === 'ALL') return matches
+  const compIds = {
+    PD: 2014,   // La Liga
+    CL: 2001,   // Champions League
+  }
+  const compId = compIds[code]
+  if (!compId) return matches
+  return matches.filter((m) => m.competition?.id === compId)
+}
+
+// ─── Season Stats Calculator ────────────────────────────────────────────────
+
+export function calculateSeasonStats(matches) {
+  const finished = matches.filter((m) => m.status === 'FINISHED')
   let wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0
 
-  played.forEach((m) => {
+  finished.forEach((m) => {
     const result = getMatchResult(m)
-    const score = getScore(m)
-    if (result === 'W') wins++
-    else if (result === 'D') draws++
-    else losses++
-    goalsFor += score.barca || 0
-    goalsAgainst += score.opponent || 0
+    if (result === 'WIN') wins++
+    else if (result === 'DRAW') draws++
+    else if (result === 'LOSS') losses++
+
+    goalsFor += getBarcaScore(m) || 0
+    goalsAgainst += getOpponentScore(m) || 0
   })
 
-  return { played: played.length, wins, draws, losses, goalsFor, goalsAgainst }
+  const played = finished.length
+  const points = wins * 3 + draws
+  const goalDifference = goalsFor - goalsAgainst
+  const winRate = played > 0 ? ((wins / played) * 100).toFixed(1) : '0.0'
+
+  return { played, wins, draws, losses, goalsFor, goalsAgainst, goalDifference, points, winRate }
 }

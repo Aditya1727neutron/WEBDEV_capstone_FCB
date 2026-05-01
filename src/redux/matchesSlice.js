@@ -1,94 +1,56 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { footballApi } from '../../services/footballApi'
+import { fetchMatches as fetchMatchesApi, MOCK_MATCHES } from '../services/footballApi'
 
-// Async thunk to fetch all fixtures for Barcelona
 export const fetchMatches = createAsyncThunk(
   'matches/fetchMatches',
-  async ({ season = 2023 } = {}, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await footballApi.getFixtures({ team: 529, season })
-      return response.data.response
+      const matches = await fetchMatchesApi()
+      if (matches && matches.length > 0) {
+        return matches
+      }
+      return MOCK_MATCHES
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch matches')
+      console.warn('API fetch failed, using mock data:', error.message)
+      return rejectWithValue(error.message)
     }
   }
 )
 
-// Async thunk to fetch a single match by fixture ID
-export const fetchMatchById = createAsyncThunk(
-  'matches/fetchMatchById',
-  async (fixtureId, { rejectWithValue }) => {
-    try {
-      const [fixtureRes, statsRes] = await Promise.all([
-        footballApi.getFixtures({ id: fixtureId }),
-        footballApi.getFixtureStats(fixtureId),
-      ])
-      return {
-        fixture: fixtureRes.data.response[0],
-        stats: statsRes.data.response,
-      }
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch match details')
-    }
-  }
-)
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+  usingMockData: false,
+}
 
 const matchesSlice = createSlice({
   name: 'matches',
-  initialState: {
-    list: [],           // All fixtures
-    currentMatch: null, // Selected match detail
-    loading: false,
-    detailLoading: false,
-    error: null,
-    detailError: null,
-    activeCompetition: 'All', // Filter state
-    currentPage: 1,
-    itemsPerPage: 10,
-  },
+  initialState,
   reducers: {
-    setActiveCompetition(state, action) {
-      state.activeCompetition = action.payload
-      state.currentPage = 1
-    },
-    setCurrentPage(state, action) {
-      state.currentPage = action.payload
-    },
-    clearCurrentMatch(state) {
-      state.currentMatch = null
-      state.detailError = null
+    clearMatchesError(state) {
+      state.error = null
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch all matches
       .addCase(fetchMatches.pending, (state) => {
         state.loading = true
         state.error = null
       })
       .addCase(fetchMatches.fulfilled, (state, action) => {
         state.loading = false
-        state.list = action.payload
+        state.items = action.payload
+        state.usingMockData = false
       })
       .addCase(fetchMatches.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
-      })
-      // Fetch single match
-      .addCase(fetchMatchById.pending, (state) => {
-        state.detailLoading = true
-        state.detailError = null
-      })
-      .addCase(fetchMatchById.fulfilled, (state, action) => {
-        state.detailLoading = false
-        state.currentMatch = action.payload
-      })
-      .addCase(fetchMatchById.rejected, (state, action) => {
-        state.detailLoading = false
-        state.detailError = action.payload
+        state.error = action.payload || 'Failed to fetch matches'
+        state.items = MOCK_MATCHES
+        state.usingMockData = true
       })
   },
 })
 
-export const { setActiveCompetition, setCurrentPage, clearCurrentMatch } = matchesSlice.actions
+export const { clearMatchesError } = matchesSlice.actions
 export default matchesSlice.reducer
