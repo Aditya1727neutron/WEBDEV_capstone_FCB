@@ -3,6 +3,7 @@ import uiReducer from './uiSlice'
 import matchesReducer from './matchesSlice'
 import playersReducer from './playersSlice'
 import favoritesReducer from './favoritesSlice'
+import standingsReducer from './standingsSlice'
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     matches: matchesReducer,
     players: playersReducer,
     favorites: favoritesReducer,
+    standings: standingsReducer,
   },
 })
 

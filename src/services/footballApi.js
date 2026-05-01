@@ -1,7 +1,7 @@
 // Football Data API Service
 // Using football-data.org API v4 — filtered for FC Barcelona (team ID: 81)
 
-const API_TOKEN = '22ec0788bb8940cc9c8db00194b45592'
+const API_TOKEN = import.meta.env.VITE_FOOTBALL_API_TOKEN || '22ec0788bb8940cc9c8db00194b45592'
 const BASE_URL = 'https://api.football-data.org/v4'
 const BARCA_TEAM_ID = 81
 const LA_LIGA_CODE = 'PD'

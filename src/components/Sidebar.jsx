@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setSidebarOpen } from '../redux/uiSlice'
@@ -48,14 +48,14 @@ function Sidebar() {
   const { matchIds, playerIds } = useSelector((state) => state.favorites)
   const totalFavorites = matchIds.length + playerIds.length
 
-  const closeSidebar = () => dispatch(setSidebarOpen(false))
+  const closeSidebar = useCallback(() => dispatch(setSidebarOpen(false)), [dispatch])
 
   return (
     <>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden animate-fade-in"
           onClick={closeSidebar}
         />
       )}
@@ -64,7 +64,7 @@ function Sidebar() {
       <aside
         className={`
           fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64
-          backdrop-blur-xl border-r transition-transform duration-300 ease-in-out
+          navbar-blur border-r transition-transform duration-300 ease-in-out
           lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           ${darkMode
@@ -80,11 +80,12 @@ function Sidebar() {
               <NavLink
                 key={item.path}
                 to={item.path}
+                end={item.path === '/'}
                 onClick={closeSidebar}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative
                   ${isActive
-                    ? 'gradient-bg text-white shadow-lg'
+                    ? 'gradient-bg text-white shadow-lg sidebar-link-active'
                     : darkMode
                       ? 'text-gray-400 hover:bg-barca-dark-card hover:text-white'
                       : 'text-barca-away-text-muted hover:bg-barca-away-surface hover:text-barca-away-text'
@@ -97,7 +98,7 @@ function Sidebar() {
                 <span>{item.label}</span>
                 {/* Favorites badge */}
                 {item.label === 'Favorites' && totalFavorites > 0 && (
-                  <span className="ml-auto px-2 py-0.5 text-xs font-bold rounded-full bg-barca-red text-white">
+                  <span className="ml-auto px-2 py-0.5 text-xs font-bold rounded-full bg-barca-red text-white animate-scale-in shadow-lg shadow-barca-red/30">
                     {totalFavorites}
                   </span>
                 )}
@@ -105,14 +106,27 @@ function Sidebar() {
             ))}
           </nav>
 
+          {/* Season info */}
+          <div className={`mb-3 px-4 py-3 rounded-xl ${darkMode ? 'bg-barca-dark-card border border-barca-dark-border' : 'bg-barca-away-surface border border-barca-away-border'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <svg className={`w-4 h-4 ${darkMode ? 'text-barca-blue-light' : 'text-barca-red'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className={`text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-barca-away-text'}`}>Season 2024/25</span>
+            </div>
+            <p className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-barca-away-text-muted'}`}>
+              La Liga • Champions League
+            </p>
+          </div>
+
           {/* Bottom section — Barça motto */}
-          <div className={`mt-auto pt-4 border-t ${darkMode ? 'border-barca-dark-border' : 'border-barca-away-border'}`}>
+          <div className={`pt-4 border-t ${darkMode ? 'border-barca-dark-border' : 'border-barca-away-border'}`}>
             <div className={`px-4 py-3 rounded-xl ${
               darkMode
-                ? 'bg-gradient-to-br from-barca-blue/10 to-barca-red/10'
-                : 'bg-gradient-to-br from-barca-red/10 to-barca-gold/10'
+                ? 'bg-gradient-to-br from-barca-blue/10 to-barca-red/10 border border-barca-dark-border/50'
+                : 'bg-gradient-to-br from-barca-red/10 to-barca-gold/10 border border-barca-away-border/50'
             }`}>
-              <p className="text-xs font-semibold gradient-text">Més que un club</p>
+              <p className="text-sm font-bold gradient-text">Més que un club</p>
               <p className={`text-[10px] mt-0.5 ${darkMode ? 'text-gray-500' : 'text-barca-away-text-muted'}`}>
                 More than a club
               </p>
@@ -124,4 +138,4 @@ function Sidebar() {
   )
 }
 
-export default Sidebar
+export default React.memo(Sidebar)

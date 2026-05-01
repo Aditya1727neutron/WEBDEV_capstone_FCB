@@ -23,3 +23,7 @@ export function useIsMatchFavorite(matchId) {
 export function useIsPlayerFavorite(playerId) {
   return useSelector((state) => state.favorites.playerIds.includes(playerId))
 }
+
+// Re-export custom hooks
+export { useDebounce } from './useDebounce'
+export { useAutoRefresh } from './useAutoRefresh'
