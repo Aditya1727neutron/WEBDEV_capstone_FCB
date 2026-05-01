@@ -1,36 +1,32 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { getBarcelonaPlayers } from '../services/footballApi'
+import { fetchSquad, MOCK_PLAYERS } from '../services/footballApi'
 
-/**
- * Async thunk: Fetch all Barcelona players from API-Football.
- * Uses REAL API data — no mock/dummy arrays.
- * Handles pagination internally via the API service.
- */
 export const fetchPlayers = createAsyncThunk(
   'players/fetchPlayers',
-  async (season = 2024, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const players = await getBarcelonaPlayers(season)
-      return players
+      const players = await fetchSquad()
+      if (players && players.length > 0) {
+        return players
+      }
+      return MOCK_PLAYERS
     } catch (error) {
-      const msg =
-        error.response?.status === 429
-          ? 'API rate limit exceeded. Please wait a moment and try again.'
-          : error.response?.status === 401
-          ? 'Invalid API key. Check your VITE_API_KEY in .env'
-          : error.message || 'Failed to fetch players'
-      return rejectWithValue(msg)
+      console.warn('API fetch failed for players, using mock data:', error.message)
+      return rejectWithValue(error.message)
     }
   }
 )
 
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+  usingMockData: false,
+}
+
 const playersSlice = createSlice({
   name: 'players',
-  initialState: {
-    items: [],
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     clearPlayersError(state) {
       state.error = null
@@ -45,10 +41,13 @@ const playersSlice = createSlice({
       .addCase(fetchPlayers.fulfilled, (state, action) => {
         state.loading = false
         state.items = action.payload
+        state.usingMockData = false
       })
       .addCase(fetchPlayers.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload || 'Failed to fetch players'
+        state.items = MOCK_PLAYERS
+        state.usingMockData = true
       })
   },
 })

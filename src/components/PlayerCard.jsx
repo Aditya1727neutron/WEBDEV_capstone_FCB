@@ -39,15 +39,11 @@ function PlayerCard({ player }) {
       {/* Header: Avatar + Position + Favorite */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          {/* Player avatar with photo or initials fallback */}
+          {/* Player avatar with initials */}
           <div className="relative">
-            {player.photo ? (
-              <img src={player.photo} alt={player.name} className="w-12 h-12 rounded-xl object-cover shadow-lg transition-transform duration-300 group-hover:scale-105" />
-            ) : (
-              <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105">
-                <span className="text-white font-bold text-sm font-heading">{player.shirtNumber || initials}</span>
-              </div>
-            )}
+            <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105">
+              <span className="text-white font-bold text-sm font-heading">{player.shirtNumber || initials}</span>
+            </div>
             {/* Position dot */}
             <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border-2 ${darkMode ? 'border-barca-dark-card' : 'border-white'} ${getPositionColor(player.position).replace('border-', 'bg-').replace('/20', '').replace('text-', 'text-')}`}>
               {formatPosition(player.position)}

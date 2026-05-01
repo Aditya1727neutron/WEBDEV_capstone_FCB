@@ -11,7 +11,7 @@ import SkeletonCard from '../components/SkeletonCard'
 
 function Dashboard() {
   const dispatch = useDispatch()
-  const { items: matches, loading: matchesLoading, error: matchesError } = useSelector((s) => s.matches)
+  const { items: matches, loading: matchesLoading, usingMockData } = useSelector((s) => s.matches)
   const { items: players, loading: playersLoading } = useSelector((s) => s.players)
   const { barcaPosition } = useSelector((s) => s.standings)
   const { darkMode } = useSelector((s) => s.ui)
@@ -61,9 +61,9 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {matchesError && (
-            <span className="text-[10px] bg-red-500/15 text-red-400 px-3 py-1.5 rounded-full font-semibold border border-red-500/20">
-              ⚠️ {matchesError}
+          {usingMockData && (
+            <span className="text-[10px] bg-barca-gold/15 text-barca-gold-dark dark:text-barca-gold px-3 py-1.5 rounded-full font-semibold border border-barca-gold/20">
+              📡 Demo Data
             </span>
           )}
           <button
@@ -184,8 +184,8 @@ function Dashboard() {
 /* ===== Sub-components ===== */
 
 function NextMatchWidget({ match, darkMode }) {
-  const opponent = match.homeTeam.id === 529 ? match.awayTeam : match.homeTeam
-  const isHome = match.homeTeam.id === 529
+  const opponent = match.homeTeam.id === 81 ? match.awayTeam : match.homeTeam
+  const isHome = match.homeTeam.id === 81
   const matchDate = new Date(match.utcDate)
 
   // Countdown

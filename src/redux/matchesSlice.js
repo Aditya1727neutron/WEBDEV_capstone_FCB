@@ -1,35 +1,32 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { getBarcelonaMatches } from '../services/footballApi'
+import { fetchMatches as fetchMatchesApi, MOCK_MATCHES } from '../services/footballApi'
 
-/**
- * Async thunk: Fetch all Barcelona matches from API-Football.
- * Uses REAL API data — no mock/dummy arrays.
- */
 export const fetchMatches = createAsyncThunk(
   'matches/fetchMatches',
-  async (season = 2024, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const matches = await getBarcelonaMatches(season)
-      return matches
+      const matches = await fetchMatchesApi()
+      if (matches && matches.length > 0) {
+        return matches
+      }
+      return MOCK_MATCHES
     } catch (error) {
-      const msg =
-        error.response?.status === 429
-          ? 'API rate limit exceeded. Please wait a moment and try again.'
-          : error.response?.status === 401
-          ? 'Invalid API key. Check your VITE_API_KEY in .env'
-          : error.message || 'Failed to fetch matches'
-      return rejectWithValue(msg)
+      console.warn('API fetch failed, using mock data:', error.message)
+      return rejectWithValue(error.message)
     }
   }
 )
 
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+  usingMockData: false,
+}
+
 const matchesSlice = createSlice({
   name: 'matches',
-  initialState: {
-    items: [],
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     clearMatchesError(state) {
       state.error = null
@@ -44,10 +41,13 @@ const matchesSlice = createSlice({
       .addCase(fetchMatches.fulfilled, (state, action) => {
         state.loading = false
         state.items = action.payload
+        state.usingMockData = false
       })
       .addCase(fetchMatches.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload || 'Failed to fetch matches'
+        state.items = MOCK_MATCHES
+        state.usingMockData = true
       })
   },
 })
